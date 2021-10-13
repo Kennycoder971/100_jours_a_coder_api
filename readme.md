@@ -17,7 +17,7 @@ Pour créer la base de donnée vous devez modifier le dossier /config.json puis 
 sequelize db:create
 ```
 
-## Démmarage du serveur
+## Démarrage du serveur
 
 ```
 #Pour le développement
