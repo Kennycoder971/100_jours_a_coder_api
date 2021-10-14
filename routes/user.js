@@ -2,12 +2,15 @@ const express = require("express");
 const {
   getUsers,
   getUser,
+  getUserFriendRequests,
   createUser,
   updateUser,
   deleteUser,
 } = require("../controllers/user");
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
+
+router.get("/:userId/friend_requests", getUserFriendRequests);
 
 router.route("/").get(getUsers).post(createUser);
 

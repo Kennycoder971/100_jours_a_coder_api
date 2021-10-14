@@ -1,34 +1,40 @@
 "use strict";
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("Friend_requests", {
+  up: async (queryInterface, DataTypes) => {
+    await queryInterface.createTable("friend_request", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: DataTypes.INTEGER,
       },
       request_id_from: {
-        type: Sequelize.INTEGER,
+        type: DataTypes.INTEGER,
       },
       request_id_to: {
-        type: Sequelize.INTEGER,
+        type: DataTypes.INTEGER,
       },
       status: {
-        type: Sequelize.ENUM,
+        type: DataTypes.ENUM,
         values: ["p", "a"],
+        validate: {
+          isIn: {
+            args: [["p", "a"]],
+            msg: "Le status doit être p (pending) ou a (accepted). ",
+          },
+        },
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: DataTypes.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: DataTypes.DATE,
       },
     });
   },
-  down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("Friend_requests");
+  down: async (queryInterface, DataTypes) => {
+    await queryInterface.dropTable("friend_request");
   },
 };

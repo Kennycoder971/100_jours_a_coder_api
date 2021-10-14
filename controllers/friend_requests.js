@@ -5,7 +5,7 @@ const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
 
 /**
- * @desc      Get all friend requests
+ * @desc      Get all friend requests received
  * @route     GET /api/v1/friend_requests
  * @access    Private
  */
@@ -55,7 +55,7 @@ exports.createFriendRequest = asyncHandler(async (req, res, next) => {
   });
 
   if (friendRequest)
-    next(
+    return next(
       new ErrorResponse(
         `L'utilisateur aves l'id ${body.request_id_from} a déjà  envoyé une requête d'amis à l'utilisateur avec l'id ${body.request_id_to}`,
         400

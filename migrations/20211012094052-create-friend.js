@@ -1,30 +1,20 @@
 "use strict";
 module.exports = {
   up: async (queryInterface, DataTypes) => {
-    await queryInterface.createTable("challenges", {
+    await queryInterface.createTable("friend", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      text: {
-        type: DataTypes.TEXT,
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
       },
-      image: {
-        type: DataTypes.STRING,
-      },
-      succeeded: {
-        type: DataTypes.BOOLEAN,
-      },
-      hours_a_day: {
-        type: DataTypes.TIME,
-      },
-      start_date: {
-        type: DataTypes.DATE,
-      },
-      end_date: {
-        type: DataTypes.DATE,
+      friends_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -37,6 +27,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, DataTypes) => {
-    await queryInterface.dropTable("challenges");
+    await queryInterface.dropTable("friend");
   },
 };

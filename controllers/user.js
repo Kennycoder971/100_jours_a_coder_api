@@ -1,4 +1,5 @@
 const { User } = require("../models");
+const { FriendRequest } = require("../models");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
 const buildWhereQuery = require("../utils/buildWherequery");
@@ -45,6 +46,37 @@ exports.getUser = asyncHandler(async (req, res, next) => {
   });
 });
 
+/**
+ * @desc      Get all friend requests for a user
+ * @route     GET /api/v1/users/:userId/friend_requests
+ * @access    Private
+ */
+exports.getUserFriendRequests = asyncHandler(async (req, res, next) => {
+  const { userId } = req.params;
+
+  const user = await User.findByPk(userId);
+
+  if (!user)
+    return next(
+      new ErrorResponse(`L'utilisateur avec l'id ${userId} n' existe pas`)
+    );
+
+  const friendRequests = await FriendRequest.findAll({
+    where: { request_id_to: userId },
+    include: {
+      model: User,
+      where: {
+        id: userId,
+      },
+      attributes: ["firstname", "username", "lastname"],
+    },
+  });
+
+  res.status(200).json({
+    success: true,
+    data: friendRequests,
+  });
+});
 /**
  * @desc      Create a user
  * @route     POST /api/v1/users

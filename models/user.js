@@ -1,15 +1,13 @@
 const validator = require("validator");
 
 const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
+    static associate({ FriendRequest, Friend }) {
       // define association here
+      this.hasMany(FriendRequest, { foreignKey: "request_id_to" });
+      this.hasMany(Friend, { foreignKey: "request_id_to" });
     }
   }
   User.init(
