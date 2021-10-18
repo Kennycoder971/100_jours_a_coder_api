@@ -16,15 +16,49 @@ module.exports = (sequelize, DataTypes) => {
       text: {
         type: DataTypes.TEXT,
         allowNull: false,
+        validate: {
+          notEmpty: {
+            msg: "Le champ texte est requis",
+          },
+        },
       },
       image: DataTypes.STRING,
-      succeeded: DataTypes.BOOLEAN,
-      hours_a_day: DataTypes.TIME,
-      start_date: DataTypes.DATE,
-      end_date: DataTypes.DATE,
+      succeeded: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      hours_a_day: {
+        type: DataTypes.TIME,
+        allowNull: false,
+        validate: {
+          is: {
+            args: /^\d{1,2}:(?:[0-5]\d):(?:[0-5]\d)$/gm,
+            msg: "Le temps n'est pas valide",
+          },
+        },
+      },
+      start_date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        validate: {
+          isDate: {
+            msg: "La date doit être valide",
+          },
+        },
+      },
+      end_date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        validate: {
+          isDate: {
+            msg: "La date doit être valide",
+          },
+        },
+      },
     },
     {
       sequelize,
+      tableName: "challenge",
       modelName: "Challenge",
     }
   );

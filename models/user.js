@@ -4,10 +4,12 @@ const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    static associate({ FriendRequest, Friend }) {
+    static associate({ FriendRequest, Friend, Challenge, Message }) {
       // define association here
       this.hasMany(FriendRequest, { foreignKey: "request_id_to" });
       this.hasMany(Friend, { foreignKey: "request_id_to" });
+      this.hasMany(Challenge, { foreignKey: "user_id" });
+      this.hasMany(Message, { foreignKey: "user_id_to" });
     }
   }
   User.init(
@@ -120,9 +122,8 @@ module.exports = (sequelize, DataTypes) => {
       birth_date: {
         type: DataTypes.STRING,
         validate: {
-          is: {
-            args: /^([0-2][0-9]|(3)[0-1])(\/|-)(((0)[0-9])|((1)[0-2]))(\/|-)\d{4}$/,
-            msg: "La date doit être au format JJ/MM/AAAA",
+          isDate: {
+            msg: "La date doit être valide",
           },
         },
       },

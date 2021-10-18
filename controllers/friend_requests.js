@@ -7,23 +7,25 @@ const ErrorResponse = require("../utils/ErrorResponse");
 /**
  * @desc      Get all friend requests received
  * @route     GET /api/v1/friend_requests
+ * @route     GET /api/v1/friend_requests?sender=:id
  * @access    Private
  */
 exports.getFriendRequests = asyncHandler(async (req, res, next) => {
-  let friendRequests
-  if(req.query.sender) {
+  let friendRequests;
+  if (req.query.sender) {
     friendRequests = await FriendRequest.findAll({
-      where:{
-        request_id_from:req.query.sender
-      },include: {
+      where: {
+        request_id_from: req.query.sender,
+      },
+      include: {
         model: User,
         attributes: ["firstname", "username", "lastname"],
       },
-    })
+    });
   } else {
     friendRequests = await FriendRequest.findAll({});
   }
-   
+
   res.status(201).json({
     success: true,
     data: friendRequests,
