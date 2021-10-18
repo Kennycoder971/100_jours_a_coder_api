@@ -10,7 +10,20 @@ const ErrorResponse = require("../utils/ErrorResponse");
  * @access    Private
  */
 exports.getFriendRequests = asyncHandler(async (req, res, next) => {
-  const friendRequests = await FriendRequest.findAll({});
+  let friendRequests
+  if(req.query.sender) {
+    friendRequests = await FriendRequest.findAll({
+      where:{
+        request_id_from:req.query.sender
+      },include: {
+        model: User,
+        attributes: ["firstname", "username", "lastname"],
+      },
+    })
+  } else {
+    friendRequests = await FriendRequest.findAll({});
+  }
+   
   res.status(201).json({
     success: true,
     data: friendRequests,

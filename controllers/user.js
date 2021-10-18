@@ -77,6 +77,7 @@ exports.getUserFriendRequests = asyncHandler(async (req, res, next) => {
     data: friendRequests,
   });
 });
+
 /**
  * @desc      Create a user
  * @route     POST /api/v1/users

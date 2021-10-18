@@ -1,9 +1,10 @@
 {
   "development": {
     "username": "root",
-    "password": "root",
+    "password": "musiques007",
     "database": "100_jours_a_coder",
     "host": "127.0.0.1",
+    "port":"3306",
     "dialect": "mysql"
   },
   "test": {
