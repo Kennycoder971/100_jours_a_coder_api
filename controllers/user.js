@@ -1,8 +1,8 @@
 const { User } = require("../models");
+const { Op } = require("sequelize");
 const { FriendRequest } = require("../models");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
-const buildWhereQuery = require("../utils/buildWherequery");
 
 /**
  * @desc      Get all users
@@ -13,12 +13,27 @@ const buildWhereQuery = require("../utils/buildWherequery");
 exports.getUsers = asyncHandler(async (req, res, next) => {
   let users;
 
-  const whereQuery = buildWhereQuery(req);
-
-  // If req query obj is not empty, search with query keys
-  if (req.query && Object.keys(req.query).length !== 0) {
+  if (req.query.name) {
     users = await User.findAll({
-      where: whereQuery,
+      where: {
+        [Op.or]: [
+          {
+            username: {
+              [Op.like]: `%${req.query.name}%`,
+            },
+          },
+          {
+            firstname: {
+              [Op.like]: `%${req.query.name}%`,
+            },
+          },
+          {
+            lastname: {
+              [Op.like]: `%${req.query.name}%`,
+            },
+          },
+        ],
+      },
     });
   } else {
     users = await User.findAll();

@@ -1,15 +1,38 @@
 const validator = require("validator");
-
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
+    getSignedJwtToken() {
+      return jwt.sign(
+        {
+          id: this.id,
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: process.env.JWT_EXPIRE,
+        }
+      );
+    }
+
+    async matchPassword(enteredPassword) {
+      return await bcrypt.compare(enteredPassword, this.password);
+    }
+
     static associate({ FriendRequest, Friend, Challenge, Message }) {
       // define association here
-      this.hasMany(FriendRequest, { foreignKey: "request_id_to" });
-      this.hasMany(Friend, { foreignKey: "request_id_to" });
-      this.hasMany(Challenge, { foreignKey: "user_id" });
-      this.hasMany(Message, { foreignKey: "user_id_to" });
+      this.hasMany(FriendRequest, {
+        foreignKey: "request_id_to",
+        onDelete: "cascade",
+      });
+      this.hasMany(Friend, {
+        foreignKey: "user_id_requester",
+        onDelete: "cascade",
+      });
+      this.hasMany(Challenge, { foreignKey: "user_id", onDelete: "cascade" });
+      this.hasMany(Message, { foreignKey: "user_id_to", onDelete: "cascade" });
     }
   }
   User.init(
@@ -127,12 +150,24 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
+      role: {
+        type: DataTypes.ENUM,
+        values: ["user", "admin", "visitor"],
+      },
     },
     {
+      hooks: {
+        beforeSave: async function (user, options) {
+          // Hash the password
+          user.password = await bcrypt.hash(user.password, 10);
+        },
+      },
+
       sequelize,
       tableName: "users",
       modelName: "User",
     }
   );
+
   return User;
 };

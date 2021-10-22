@@ -1,6 +1,5 @@
 const { Op } = require("sequelize");
-const { User } = require("../models");
-const { FriendRequest } = require("../models");
+const { FriendRequest, User } = require("../models");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
 
@@ -113,7 +112,7 @@ exports.createFriendRequest = asyncHandler(async (req, res, next) => {
 });
 
 /**
- * @desc      Update a single friend request
+ * @desc      Update a single friend request and create a friend
  * @route     PUT /api/v1/friend_requests/:id
  * @access    Private
  */
@@ -123,12 +122,22 @@ exports.updateFriendRequest = asyncHandler(async (req, res, next) => {
   if (!friendRequest)
     return next(
       new ErrorResponse(
-        `La requête d'amis avec l'id ${req.params.id} n'existe pas`,
+        `La requête d'amis avec l'id ${friendRequests.id} n'existe pas`,
         404
       )
     );
 
   await friendRequest.update(req.body);
+
+  if (friendRequest.status === "a") {
+    const requester = await User.findByPk(friendRequest.request_id_from);
+    const requested = await User.findByPk(friendRequest.request_id_to);
+
+    await requester.createFriend({
+      user_id_requester: requester.id,
+      user_id_requested: requested.id,
+    });
+  }
 
   res.status(200).json({
     success: true,

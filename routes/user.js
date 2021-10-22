@@ -1,4 +1,5 @@
 const express = require("express");
+const { protect } = require("../middlewares/auth");
 const {
   getUsers,
   getUser,
@@ -10,10 +11,16 @@ const {
 
 const router = express.Router({ mergeParams: true });
 
-router.get("/:userId/friend_requests", getUserFriendRequests);
+router.get("/:userId/friend_requests", protect, getUserFriendRequests);
 
-router.route("/").get(getUsers).post(createUser);
+// router.get("/:userId/friends", getUserFriends);
 
-router.route("/:id").get(getUser).put(updateUser).delete(deleteUser);
+router.route("/").get(protect, getUsers).post(createUser);
+
+router
+  .route("/:id")
+  .get(protect, getUser)
+  .put(protect, updateUser)
+  .delete(protect, deleteUser);
 
 module.exports = router;

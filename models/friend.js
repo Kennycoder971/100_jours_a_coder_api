@@ -13,11 +13,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   Friend.init(
     {
-      user_id: {
+      user_id_requester: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      friends_id: {
+      user_id_requested: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Friend",
-      tableName: "friend",
+      tableName: "friends",
     }
   );
   return Friend;

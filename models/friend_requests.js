@@ -28,14 +28,14 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           isIn: {
             args: [["p", "a"]],
-            msg: "Le status doit être p (pending) ou a (accepted). ",
+            msg: "Le status doit être p (pending),a (accepted) . ",
           },
         },
       },
     },
     {
       sequelize,
-      tableName: "friend_request",
+      tableName: "friend_requests",
       modelName: "FriendRequest",
     }
   );

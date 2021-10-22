@@ -1,7 +1,8 @@
-const { sequelize } = require("./models/index");
+const { sequelize, User } = require("./models/index");
 const dotenv = require("dotenv");
 const express = require("express");
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 const colors = require("colors");
 const errorHandler = require("./middlewares/error");
 const path = require("path");
@@ -14,9 +15,14 @@ dotenv.config({ path: "./config/config.env" });
 // Body parser
 app.use(express.json());
 
+// Cookie parser
+app.use(cookieParser());
+
 // Get the routes
 const userRoute = require("./routes/user");
 const friendRequest = require("./routes/friend_requests");
+const friend = require("./routes/friend");
+const auth = require("./routes/auth");
 
 // Dev logging middleware
 if (process.env.NODE_ENV === "development") {
@@ -29,6 +35,8 @@ app.use(express.static(path.join(__dirname, "public")));
 // Use the routes
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/friend_requests", friendRequest);
+app.use("/api/v1/friends", friend);
+app.use("/api/v1/auth", auth);
 
 // Handle the errors
 app.use(errorHandler);
@@ -41,7 +49,7 @@ app.listen(PORT, () => {
 process.on("unhandledRejection", (err, promise) => {
   console.log(`Error: ${err.message}`.red);
   // Close server & exit process
-  app.close(() => process.exit(1));
+  // app.close(() => process.exit(1));
 });
 
 // Create the database and tables

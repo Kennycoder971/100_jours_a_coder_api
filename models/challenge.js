@@ -7,12 +7,14 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      // define association here
-    }
+    static associate({ Likes }) {}
   }
   Challenge.init(
     {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+      },
       text: {
         type: DataTypes.TEXT,
         allowNull: false,
@@ -58,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      tableName: "challenge",
+      tableName: "challenges",
       modelName: "Challenge",
     }
   );

@@ -1,4 +1,5 @@
 const express = require("express");
+const { protect } = require("../middlewares/auth");
 const {
   getFriendRequests,
   getFriendRequest,
@@ -8,6 +9,8 @@ const {
 } = require("../controllers/friend_requests");
 
 const router = express.Router();
+
+router.use(protect);
 
 router.route("/").get(getFriendRequests);
 
