@@ -7,13 +7,14 @@ const {
   createUser,
   updateUser,
   deleteUser,
+  userPhotoUpload,
 } = require("../controllers/user");
 
 const router = express.Router({ mergeParams: true });
 
 router.get("/:userId/friend_requests", protect, getUserFriendRequests);
 
-// router.get("/:userId/friends", getUserFriends);
+router.route("/:id/photo").put(protect, userPhotoUpload);
 
 router.route("/").get(protect, getUsers).post(createUser);
 

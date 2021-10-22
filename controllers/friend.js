@@ -6,13 +6,13 @@ const ErrorResponse = require("../utils/ErrorResponse");
 /**
  * @desc      Get all friends
  * @route     GET /api/v1/friends
- * @route     GET /api/v1/friends?name=friendname
+ * @route     GET /api/v1/friends?name=friendName
  * @access    Private
  */
 exports.getFriends = asyncHandler(async (req, res, next) => {
   let friends;
   const { name } = req.query;
-  const currUserId = 1;
+  const currUserId = req.user.id;
 
   /**
    * @desc  Find friends as such :
@@ -78,13 +78,12 @@ exports.getFriends = asyncHandler(async (req, res, next) => {
  * @access    Private
  */
 exports.deleteFriend = asyncHandler(async (req, res, next) => {
-  const currUserId = 1;
-  let friend = await sequelize.query(
+  const friend = await sequelize.query(
     `SELECT * FROM friend 
-     WHERE user_id_requester = ${currUserId} 
+     WHERE user_id_requester = ${req.user.id} 
      AND user_id_requested = ${req.params.id} 
      OR user_id_requester = ${req.params.id} 
-     AND user_id_requested = ${currUserId}`,
+     AND user_id_requested = ${req.user.id}`,
     { model: Friend, mapToModel: true }
   );
 
