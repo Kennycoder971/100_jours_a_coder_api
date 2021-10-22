@@ -49,13 +49,12 @@ exports.getFriendRequest = asyncHandler(async (req, res, next) => {
 
 /**
  * @desc      Create a friend request
- * @route     POST /api/v1/friend_requests
+ * @route     POST /api/v1/friend_requests/:id
  * @access    Private
  */
 exports.createFriendRequest = asyncHandler(async (req, res, next) => {
-  const idUser1 = 1;
   const body = {
-    request_id_from: idUser1,
+    request_id_from: req.user.id,
     request_id_to: req.params.id,
     status: "p",
   };
@@ -81,7 +80,7 @@ exports.createFriendRequest = asyncHandler(async (req, res, next) => {
     where: {
       [Op.or]: [
         {
-          id: idUser1,
+          id: req.user.id,
         },
         {
           id: req.params.id,
@@ -103,7 +102,11 @@ exports.createFriendRequest = asyncHandler(async (req, res, next) => {
       )
     );
 
-  friendRequest = await FriendRequest.create(body);
+  friendRequest = await FriendRequest.create({
+    request_id_from: req.user.id,
+    request_id_to: req.params.id,
+    status: "p",
+  });
 
   res.status(201).json({
     success: true,
@@ -112,7 +115,7 @@ exports.createFriendRequest = asyncHandler(async (req, res, next) => {
 });
 
 /**
- * @desc      Update a single friend request and create a friend
+ * @desc      Update or accept a friend request and create a friend
  * @route     PUT /api/v1/friend_requests/:id
  * @access    Private
  */
@@ -127,17 +130,17 @@ exports.updateFriendRequest = asyncHandler(async (req, res, next) => {
       )
     );
 
-  await friendRequest.update(req.body);
+  await friendRequest.update({
+    status: "a",
+  });
 
-  if (friendRequest.status === "a") {
-    const requester = await User.findByPk(friendRequest.request_id_from);
-    const requested = await User.findByPk(friendRequest.request_id_to);
+  const requester = await User.findByPk(friendRequest.request_id_from);
+  const requested = await User.findByPk(friendRequest.request_id_to);
 
-    await requester.createFriend({
-      user_id_requester: requester.id,
-      user_id_requested: requested.id,
-    });
-  }
+  await requester.createFriend({
+    user_id_requester: requester.id,
+    user_id_requested: requested.id,
+  });
 
   res.status(200).json({
     success: true,

@@ -35,6 +35,12 @@ exports.getFriends = asyncHandler(async (req, res, next) => {
     },
   });
 
+  if (!friends[0])
+    return res.status(200).json({
+      success: true,
+      data: [],
+    });
+
   // Get all friends id
   const arrFriendsId = friends.map(
     ({ user_id_requester, user_id_requested }) => {
@@ -46,7 +52,9 @@ exports.getFriends = asyncHandler(async (req, res, next) => {
 
   // Get the friends (users) by id and define them as a User instance
   friends = await sequelize.query(
-    `SELECT * FROM users WHERE id in (${arrFriendsId.join(", ")})`,
+    `SELECT id, username, profile_picture FROM users WHERE id in (${arrFriendsId.join(
+      ", "
+    )})`,
     {
       model: User,
       mapToModel: true,
@@ -79,7 +87,7 @@ exports.getFriends = asyncHandler(async (req, res, next) => {
  */
 exports.deleteFriend = asyncHandler(async (req, res, next) => {
   const friend = await sequelize.query(
-    `SELECT * FROM friend 
+    `SELECT * FROM friends
      WHERE user_id_requester = ${req.user.id} 
      AND user_id_requested = ${req.params.id} 
      OR user_id_requester = ${req.params.id} 
@@ -91,10 +99,11 @@ exports.deleteFriend = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse("Ce lien d'amitié n'existe pas", 404));
 
   await friend[0].destroy();
-  // await friend.destroy();
+
+  // Destroy the friend request as well
 
   res.status(200).json({
     success: true,
-    data: friend,
+    data: {},
   });
 });

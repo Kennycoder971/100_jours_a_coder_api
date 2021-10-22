@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
-      image: DataTypes.STRING,
+      technologies: DataTypes.STRING,
       succeeded: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
