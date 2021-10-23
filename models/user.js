@@ -1,10 +1,14 @@
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
+    /**
+     * Returns jsonwebtoken
+     */
     getSignedJwtToken() {
       return jwt.sign(
         {
@@ -16,12 +20,43 @@ module.exports = (sequelize, DataTypes) => {
         }
       );
     }
-
+    /**
+     * Match the string password with then ecrypted one in the database
+     * @param  {string} enteredPassword
+     */
     async matchPassword(enteredPassword) {
       return await bcrypt.compare(enteredPassword, this.password);
     }
+    /**
+     * Generate and hash password token
+     */
+    getResetToken() {
+      // Generate token
+      const resetToken = crypto.randomBytes(20).toString("hex");
 
-    static associate({ FriendRequest, Friend, Challenge, Message }) {
+      // Hash token and set to resetPasswordToken field
+      this.token = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+      console.log(resetToken);
+      // Set the expire
+      this.reset_password_expire = Date.now() + 10 * 60 * 1000;
+
+      return resetToken;
+    }
+
+    static associate({
+      FriendRequest,
+      Friend,
+      Challenge,
+      Message,
+      resetPasswordToken,
+      Conversation,
+      UserHasConversation,
+      LikeChallenge,
+      LikeComment,
+      Reply,
+      Comment,
+    }) {
       // define association here
       this.hasMany(FriendRequest, {
         foreignKey: "request_id_to",
@@ -33,6 +68,29 @@ module.exports = (sequelize, DataTypes) => {
       });
       this.hasMany(Challenge, { foreignKey: "user_id", onDelete: "cascade" });
       this.hasMany(Message, { foreignKey: "user_id_to", onDelete: "cascade" });
+      this.hasMany(resetPasswordToken, {
+        foreignKey: "user_id",
+        onDelete: "cascade",
+      });
+      this.belongsToMany(Conversation, {
+        through: UserHasConversation,
+      });
+      this.hasMany(LikeChallenge, {
+        foreignKey: "user_id",
+        onDelete: "cascade",
+      });
+      this.hasMany(LikeComment, {
+        foreignKey: "user_id",
+        onDelete: "cascade",
+      });
+      this.hasMany(Reply, {
+        foreignKey: "user_id",
+        onDelete: "cascade",
+      });
+      this.hasMany(Comment, {
+        foreignKey: "user_id",
+        onDelete: "cascade",
+      });
     }
   }
   User.init(
