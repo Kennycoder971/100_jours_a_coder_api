@@ -13,7 +13,15 @@ module.exports = (sequelize, DataTypes) => {
   }
   Comment.init(
     {
-      content: DataTypes.STRING,
+      content: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        validate: {
+          notEmpty: {
+            msg: "Le champ texte est requis",
+          },
+        },
+      },
     },
     {
       sequelize,

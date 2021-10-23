@@ -27,6 +27,7 @@ const userRoute = require("./routes/user");
 const friendRequest = require("./routes/friend_requests");
 const friend = require("./routes/friend");
 const auth = require("./routes/auth");
+const message = require("./routes/message");
 
 // Dev logging middleware
 if (process.env.NODE_ENV === "development") {
@@ -41,6 +42,7 @@ app.use("/api/v1/users", userRoute);
 app.use("/api/v1/friend_requests", friendRequest);
 app.use("/api/v1/friends", friend);
 app.use("/api/v1/auth", auth);
+app.use("/api/v1/messages", message);
 
 // Handle the errors
 app.use(errorHandler);
@@ -58,7 +60,7 @@ process.on("unhandledRejection", (err, promise) => {
 
 // Create the database and tables
 async function main() {
-  await sequelize.sync({ force: true });
+  await sequelize.sync();
 }
 
 main();

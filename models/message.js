@@ -11,10 +11,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   Message.init(
     {
-      id: {
-        type: DataTypes.UUID,
-        primaryKey: true,
-      },
       user_id_from: {
         type: DataTypes.INTEGER,
         allowNull: false,

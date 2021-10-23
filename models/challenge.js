@@ -44,6 +44,7 @@ module.exports = (sequelize, DataTypes) => {
       start_date: {
         type: DataTypes.DATE,
         allowNull: false,
+        defaultValue: DataTypes.NOW,
         validate: {
           isDate: {
             msg: "La date doit être valide",
