@@ -20,6 +20,9 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: {
             msg: "Le champ texte est requis",
           },
+          notNull: {
+            msg: "Le champ texte est requis",
+          },
         },
       },
     },

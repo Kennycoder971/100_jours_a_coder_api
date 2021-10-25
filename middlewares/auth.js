@@ -30,6 +30,12 @@ exports.protect = asyncHandler(async (req, res, next) => {
 
     req.user = await User.findByPk(decoded.id);
 
+    if (!req.user)
+      return next(
+        new ErrorResponse("Vous n'êtes pas authorisé à accéder à cette route."),
+        401
+      );
+
     next();
   } catch (error) {
     return next(

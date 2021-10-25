@@ -1,12 +1,11 @@
-const { Op } = require("sequelize");
-const { Message, User } = require("../models");
+const { Message } = require("../models");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
 
 /**
  * @desc      Get created or sent messages
- * @route     POST /api/v1/messages
- * @route     POST /api/v1/messages?sender=me
+ * @route     GET /api/v1/messages
+ * @route     GET /api/v1/messages?sender=me
  * @access    Private
  */
 exports.getMessages = asyncHandler(async (req, res, next) => {
@@ -74,7 +73,7 @@ exports.updateMessage = asyncHandler(async (req, res, next) => {
 });
 /**
  * @desc      Delete a message
- * @route     POST /api/v1/messages/:id
+ * @route     DELETE /api/v1/messages/:id
  * @access    Private
  */
 exports.deleteMessage = asyncHandler(async (req, res, next) => {

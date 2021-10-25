@@ -13,16 +13,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   Challenge.init(
     {
-      id: {
-        type: DataTypes.UUID,
-        primaryKey: true,
-      },
       text: {
         type: DataTypes.TEXT,
-        allowNull: false,
         validate: {
           notEmpty: {
             msg: "Le champ texte est requis",
+            args: true,
           },
         },
       },
@@ -36,15 +32,22 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           is: {
-            args: /^\d{1,2}:(?:[0-5]\d):(?:[0-5]\d)$/gm,
-            msg: "Le temps n'est pas valide",
+            args: /^\d{1,2}:(?:[0-5]\d)$/gm,
+            msg: "Le temps n'est pas valide.",
+          },
+
+          notEmpty: {
+            msg: "Vous devez entrer une durée en temps.",
+            args: true,
+          },
+          notNull: {
+            msg: "Vous devez entrer une durée en temps. Ex(10:30)",
           },
         },
       },
       start_date: {
         type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW,
+
         validate: {
           isDate: {
             msg: "La date doit être valide",
@@ -53,7 +56,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       end_date: {
         type: DataTypes.DATE,
-        allowNull: false,
         validate: {
           isDate: {
             msg: "La date doit être valide",
@@ -65,6 +67,19 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       tableName: "challenges",
       modelName: "Challenge",
+
+      hooks: {
+        afterCreate: async function (challenge, options) {
+          await challenge.update({
+            start_date: sequelize.fn("NOW"),
+            end_date: sequelize.fn(
+              "DATE_ADD",
+              sequelize.literal("NOW()"),
+              sequelize.literal("INTERVAL 100 DAY")
+            ),
+          });
+        },
+      },
     }
   );
   return Challenge;

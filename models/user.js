@@ -122,6 +122,9 @@ module.exports = (sequelize, DataTypes) => {
             args: /^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u,
             msg: "Le nom d'utilisateur n'est pas valide",
           },
+          notNull: {
+            msg: "Le nom d'utilisateur est requis.",
+          },
           isUnique: async function (value) {
             const user = await User.findOne({
               where: {
@@ -152,6 +155,9 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           isEmail: {
             msg: "L'email n'est pas valide",
+          },
+          notNull: {
+            msg: "L'email est requis",
           },
           isUnique: async function (value) {
             const user = await User.findOne({
@@ -197,6 +203,9 @@ module.exports = (sequelize, DataTypes) => {
           len: {
             args: [6, 128],
             msg: "Le mot de passe doit être entre 6 et 128 charactères",
+          },
+          notNull: {
+            msg: "Le mot de passe est requis.",
           },
         },
       },
