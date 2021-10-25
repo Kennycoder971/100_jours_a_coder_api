@@ -8,7 +8,7 @@ const ErrorResponse = require("../utils/ErrorResponse");
  * @access    Private
  */
 exports.getChallenges = asyncHandler(async (req, res, next) => {
-  const challenges = await Challenge.findAll({
+  let challenges = await Challenge.findAll({
     where: {
       user_id: req.user.id,
     },
@@ -50,10 +50,10 @@ exports.updateChallenge = asyncHandler(async (req, res, next) => {
     order: [["createdAt", "DESC"]],
   });
 
-  if (!challenge)
-    return next(
-      new ErrorResponse(`Le défi avec l' id ${req.params.id} n' exite pas`, 404)
-    );
+  if (!challenge) return next(new ErrorResponse(`Le défi n' exite pas`, 404));
+
+  if (req.user.id != challenge.user_id)
+    return next(new ErrorResponse(`Le défi ne vous appartient pas`, 401));
 
   await challenge.update(req.body);
 
@@ -80,6 +80,8 @@ exports.deleteChallenge = asyncHandler(async (req, res, next) => {
     return next(
       new ErrorResponse(`Le défi avec l' id ${req.params.id} n' exite pas`, 404)
     );
+  if (req.user.id != challenge.user_id)
+    return next(new ErrorResponse(`Le défi ne vous appartient pas`, 401));
 
   await challenge.destroy(req.body);
 

@@ -7,8 +7,9 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Comment }) {
-      this.hasMany(Comment);
+    static associate({ Comment, LikeChallenge }) {
+      this.hasMany(Comment, { foreignKey: "challenge_id" });
+      this.hasMany(LikeChallenge, { foreignKey: "challenge_id" });
     }
   }
   Challenge.init(
@@ -47,7 +48,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       start_date: {
         type: DataTypes.DATE,
-
         validate: {
           isDate: {
             msg: "La date doit être valide",
