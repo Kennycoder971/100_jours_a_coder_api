@@ -14,6 +14,12 @@ const {
   deleteComment,
 } = require("../controllers/comment_challenge");
 
+const {
+  createChallengeLike,
+  getChallengeLikes,
+  deleteChallengeLike,
+} = require("../controllers/like_challenge");
+
 const router = express.Router();
 
 router.use(protect);
@@ -24,6 +30,12 @@ router
   .route("/:challengeId/comments/:id")
   .put(updateComment)
   .delete(deleteComment);
+
+router
+  .route("/:challengeId/likes")
+  .get(getChallengeLikes)
+  .post(createChallengeLike)
+  .delete(deleteChallengeLike);
 
 router
   .route("/")

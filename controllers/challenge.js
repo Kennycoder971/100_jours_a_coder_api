@@ -8,7 +8,7 @@ const ErrorResponse = require("../utils/ErrorResponse");
  * @access    Private
  */
 exports.getChallenges = asyncHandler(async (req, res, next) => {
-  let challenges = await Challenge.findAll({
+  const challenges = await Challenge.findAll({
     where: {
       user_id: req.user.id,
     },

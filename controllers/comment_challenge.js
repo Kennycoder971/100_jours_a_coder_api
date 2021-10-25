@@ -1,5 +1,4 @@
 const { Comment, Challenge } = require("../models");
-const { Op } = require("sequelize");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
 
@@ -67,7 +66,7 @@ exports.updateComment = asyncHandler(async (req, res, next) => {
     },
   });
 
-  if (!comment)
+  if (!comment[0])
     return next(
       new ErrorResponse(
         `Le commentaire avec l' id ${req.params.id} n' exite pas.`,
@@ -117,7 +116,7 @@ exports.deleteComment = asyncHandler(async (req, res, next) => {
     },
   });
 
-  if (!comment)
+  if (!comment[0])
     return next(
       new ErrorResponse(
         `Le commentaire avec l' id ${req.params.id} n' exite pas.`,
