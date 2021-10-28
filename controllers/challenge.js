@@ -8,7 +8,7 @@ const ErrorResponse = require("../utils/ErrorResponse");
  * @access    Private
  */
 exports.getChallenges = asyncHandler(async (req, res, next) => {
-  const challenges = await Challenge.findAll({
+  let challenges = await Challenge.findAll({
     where: {
       user_id: req.user.id,
     },
@@ -19,14 +19,42 @@ exports.getChallenges = asyncHandler(async (req, res, next) => {
     data: challenges,
   });
 });
+/**
+ * @desc      Get the last challenges
+ * @route     GET /api/v1/challenges/last
+ * @access    Private
+ */
+exports.getLastChallenge = asyncHandler(async (req, res, next) => {
+  const challenge = await Challenge.findOne({
+    where: {
+      user_id: req.user.id,
+    },
+    order: [["createdAt", "DESC"]],
+  });
+
+  res.send({
+    success: true,
+    data: challenge,
+  });
+});
 
 /**
- * @desc      Create a challenge
+ * @desc      Create a challenge if the last challenge does not exists or is succeded
  * @route     POST /api/v1/challenges
  * @access    Private
  */
 exports.createChallenge = asyncHandler(async (req, res, next) => {
-  const challenge = await Challenge.create({
+  let challenge = await Challenge.findOne({
+    where: {
+      user_id: req.user.id,
+    },
+    order: [["createdAt", "DESC"]],
+  });
+
+  if (challenge && challenge.succeeded === false)
+    return next(new ErrorResponse("Vous avez déjà un défi en cours."));
+
+  challenge = await Challenge.create({
     user_id: req.user.id,
     ...req.body,
   });

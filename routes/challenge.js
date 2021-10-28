@@ -3,6 +3,7 @@ const { protect } = require("../middlewares/auth");
 const {
   createChallenge,
   getChallenges,
+  getLastChallenge,
   updateChallenge,
   deleteChallenge,
 } = require("../controllers/challenge");
@@ -20,9 +21,21 @@ const {
   deleteChallengeLike,
 } = require("../controllers/like_challenge");
 
+const {
+  getCommentLikes,
+  createCommentLike,
+  deleteCommentLike,
+} = require("../controllers/like_comment");
+
 const router = express.Router();
 
 router.use(protect);
+
+router
+  .route("/:challengeId/comments/:commentId/likes")
+  .get(getCommentLikes)
+  .post(createCommentLike)
+  .delete(deleteCommentLike);
 
 router.route("/:challengeId/comments").get(getComments).post(createComment);
 
@@ -43,5 +56,7 @@ router
   .post(createChallenge)
   .put(updateChallenge)
   .delete(deleteChallenge);
+
+router.get("/last", getLastChallenge);
 
 module.exports = router;

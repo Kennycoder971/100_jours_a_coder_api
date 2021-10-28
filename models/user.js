@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { Model } = require("sequelize");
+const sequelizePaginate = require("sequelize-paginate");
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -51,7 +52,6 @@ module.exports = (sequelize, DataTypes) => {
       Message,
       resetPasswordToken,
       Conversation,
-      UserHasConversation,
       LikeChallenge,
       LikeComment,
       Reply,
@@ -72,9 +72,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "user_id",
         onDelete: "cascade",
       });
-      this.belongsToMany(Conversation, {
-        through: UserHasConversation,
-      });
+      this.hasMany(Conversation, { foreignKey: "user_id" });
       this.hasMany(LikeChallenge, {
         foreignKey: "user_id",
         onDelete: "cascade",
@@ -236,6 +234,6 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "User",
     }
   );
-
+  sequelizePaginate.paginate(User);
   return User;
 };

@@ -1,5 +1,6 @@
 const express = require("express");
 const { protect } = require("../middlewares/auth");
+const paginationOptions = require("../middlewares/pagination_options");
 const {
   getUsers,
   getUser,
@@ -16,7 +17,7 @@ router.get("/:userId/friend_requests", protect, getUserFriendRequests);
 
 router.route("/:id/photo").put(protect, userPhotoUpload);
 
-router.route("/").get(protect, getUsers).post(createUser);
+router.route("/").get(protect, paginationOptions, getUsers).post(createUser);
 
 router
   .route("/:id")

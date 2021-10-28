@@ -29,6 +29,7 @@ const friend = require("./routes/friend");
 const auth = require("./routes/auth");
 const message = require("./routes/message");
 const challenge = require("./routes/challenge");
+const conversation = require("./routes/conversation");
 
 // Dev logging middleware
 if (process.env.NODE_ENV === "development") {
@@ -43,7 +44,9 @@ app.use("/api/v1/users", userRoute);
 app.use("/api/v1/friend_requests", friendRequest);
 app.use("/api/v1/friends", friend);
 app.use("/api/v1/auth", auth);
+app.use("/api/v1/messages", message);
 app.use("/api/v1/challenges", challenge);
+app.use("/api/v1/conversations", conversation);
 
 // Handle the errors
 app.use(errorHandler);

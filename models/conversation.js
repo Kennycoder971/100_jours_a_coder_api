@@ -1,5 +1,5 @@
 "use strict";
-const { Model } = require("sequelize");
+const { Model, INTEGER } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Conversation extends Model {
     /**
@@ -7,14 +7,11 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Reply, User, UserHasConversation }) {
+    static associate({ Reply }) {
       // define association here
       this.hasMany(Reply, {
         foreignKey: "conversation_id",
         onDelete: "cascade",
-      });
-      this.belongsToMany(User, {
-        through: UserHasConversation,
       });
     }
   }
@@ -26,7 +23,20 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
+      user_two: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          notNull: {
+            msg: "L'utilisateur 2 est requis.",
+          },
+          notEmpty: {
+            msg: "L'utilisateur 2 est requis.",
+          },
+        },
+      },
     },
+
     {
       sequelize,
       tableName: "conversations",

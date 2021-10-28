@@ -24,7 +24,7 @@ exports.getMessages = asyncHandler(async (req, res, next) => {
     });
   }
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: messages,
   });
@@ -42,7 +42,7 @@ exports.createMessage = asyncHandler(async (req, res, next) => {
     content: req.body.content,
   });
 
-  res.send({
+  res.status(201).json({
     success: true,
     data: message,
   });
@@ -66,7 +66,7 @@ exports.updateMessage = asyncHandler(async (req, res, next) => {
 
   await message.update(req.body);
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: message,
   });
@@ -89,7 +89,7 @@ exports.deleteMessage = asyncHandler(async (req, res, next) => {
 
   await message.destroy(req.body);
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: {},
   });

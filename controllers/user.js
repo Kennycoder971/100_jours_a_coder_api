@@ -3,6 +3,7 @@ const { Op } = require("sequelize");
 const { FriendRequest, User } = require("../models");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
+const getNextPrevPages = require("../utils/pagination");
 
 /**
  * @desc      Get all users
@@ -11,33 +12,64 @@ const ErrorResponse = require("../utils/ErrorResponse");
  * @access    Private/Admin
  */
 exports.getUsers = asyncHandler(async (req, res, next) => {
-  let users;
+  let users = User.findAll;
 
-  if (req.query.name) {
-    users = await User.findAll({
-      where: {
-        [Op.or]: [
-          {
-            username: {
-              [Op.like]: `%${req.query.name}%`,
-            },
-          },
-          {
-            firstname: {
-              [Op.like]: `%${req.query.name}%`,
-            },
-          },
-          {
-            lastname: {
-              [Op.like]: `%${req.query.name}%`,
-            },
-          },
-        ],
+  users = users.bind(User, {
+    where: {
+      username: {
+        [Op.substring]: `%${req.query.name}%`,
       },
-    });
-  } else {
-    users = await User.findAll();
-  }
+    },
+  });
+
+  // if (req.query.name) {
+  //   const options = {
+  //     where: {
+  //       [Op.or]: [
+  //         {
+  //           username: {
+  //             [Op.like]: `%${req.query.name}%`,
+  //           },
+  //         },
+  //         {
+  //           firstname: {
+  //             [Op.like]: `%${req.query.name}%`,
+  //           },
+  //         },
+  //         {
+  //           lastname: {
+  //             [Op.like]: `%${req.query.name}%`,
+  //           },
+  //         },
+  //       ],
+  //     },
+  //     ...req.paginationOpts,
+  //   };
+
+  //   users = await User.paginate(options);
+
+  //   users.pagination = getNextPrevPages(
+  //     req.paginationOpts.page,
+  //     req.paginationOpts.limit,
+  //     users.total
+  //   );
+  // } else {
+  //   users = await User.paginate(req.paginationOpts);
+
+  //   users.pagination = getNextPrevPages(
+  //     req.paginationOpts.page,
+  //     req.paginationOpts.paginate,
+  //     users.total
+  //   );
+  //   console.log("Paginaiton Opts:", req.paginationOpts);
+  //   console.log(
+  //     getNextPrevPages(
+  //       req.paginationOpts.page,
+  //       req.paginationOpts.paginate,
+  //       users.total
+  //     )
+  //   );
+  // }
 
   res.status(201).json({
     success: true,

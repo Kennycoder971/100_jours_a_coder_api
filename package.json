@@ -21,6 +21,7 @@
     "morgan": "^1.10.0",
     "mysql2": "^2.3.0",
     "sequelize": "^6.7.0",
+    "sequelize-paginate": "^1.1.6",
     "validator": "^13.6.0"
   }
 }

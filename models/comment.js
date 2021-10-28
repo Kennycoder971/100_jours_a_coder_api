@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const sequelizePaginate = require("sequelize-paginate");
 module.exports = (sequelize, DataTypes) => {
   class Comment extends Model {
     /**
@@ -33,5 +34,6 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "Comment",
     }
   );
+  sequelizePaginate.paginate(Comment);
   return Comment;
 };
