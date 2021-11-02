@@ -1,6 +1,8 @@
 "use strict";
 const { Model } = require("sequelize");
+const sequelizePaginate = require("sequelize-paginate");
 module.exports = (sequelize, DataTypes) => {
+
   class Friend extends Model {
     /**
      * Helper method for defining associations.
@@ -28,5 +30,6 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "friends",
     }
   );
+  sequelizePaginate.paginate(Friend);
   return Friend;
 };

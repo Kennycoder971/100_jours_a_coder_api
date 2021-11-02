@@ -17,7 +17,6 @@ exports.protect = asyncHandler(async (req, res, next) => {
   }
 
   //   Make sur token exists
-
   if (!token)
     return next(
       new ErrorResponse("Vous n'êtes pas authorisé à accéder à cette route."),
@@ -27,7 +26,6 @@ exports.protect = asyncHandler(async (req, res, next) => {
   try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     req.user = await User.findByPk(decoded.id);
 
     if (!req.user)

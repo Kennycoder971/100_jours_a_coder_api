@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { Friend, User, sequelize } = require("../models");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
+const paginatedResults = require("../utils/paginatedResults");
 
 /**
  * @desc      Get all friends

@@ -16,7 +16,7 @@ exports.getChallengeLikes = asyncHandler(async (req, res, next) => {
 
   const likes = await challenge.countLikeChallenges();
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: likes,
   });
@@ -53,7 +53,7 @@ exports.createChallengeLike = asyncHandler(async (req, res, next) => {
     challenge_id: req.params.challengeId,
   });
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: like,
   });
@@ -95,7 +95,7 @@ exports.deleteChallengeLike = asyncHandler(async (req, res, next) => {
 
   await like.destroy(req.body);
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: {},
   });

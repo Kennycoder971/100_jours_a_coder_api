@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { FriendRequest, User } = require("../models");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
+const paginatedResults = require("../utils/paginatedResults");
 
 /**
  * @desc      Get all friend requests received
@@ -11,8 +12,9 @@ const ErrorResponse = require("../utils/ErrorResponse");
  */
 exports.getFriendRequests = asyncHandler(async (req, res, next) => {
   let friendRequests;
+  let options;
   if (req.query.sender) {
-    friendRequests = await FriendRequest.findAll({
+     options = {
       where: {
         request_id_from: req.query.sender,
       },
@@ -20,9 +22,10 @@ exports.getFriendRequests = asyncHandler(async (req, res, next) => {
         model: User,
         attributes: ["firstname", "username", "lastname"],
       },
-    });
+    }
+    friendRequests = await paginatedResults(req,FriendRequest,options);
   } else {
-    friendRequests = await FriendRequest.findAll({});
+    friendRequests = await paginatedResults(req,FriendRequest);
   }
 
   res.status(201).json({

@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 const { FriendRequest, User } = require("../models");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
-const getNextPrevPages = require("../utils/pagination");
+const paginatedResults = require("../utils/paginatedResults");
 
 /**
  * @desc      Get all users
@@ -12,64 +12,36 @@ const getNextPrevPages = require("../utils/pagination");
  * @access    Private/Admin
  */
 exports.getUsers = asyncHandler(async (req, res, next) => {
-  let users = User.findAll;
-
-  users = users.bind(User, {
-    where: {
-      username: {
-        [Op.substring]: `%${req.query.name}%`,
+  let users 
+  if (req.query.name) {
+    const options = {
+      where: {
+        [Op.or]: [
+          {
+            username: {
+              [Op.like]: `%${req.query.name}%`,
+            },
+          },
+          {
+            firstname: {
+              [Op.like]: `%${req.query.name}%`,
+            },
+          },
+          {
+            lastname: {
+              [Op.like]: `%${req.query.name}%`,
+            },
+          },
+        ],
       },
-    },
-  });
+    };
 
-  // if (req.query.name) {
-  //   const options = {
-  //     where: {
-  //       [Op.or]: [
-  //         {
-  //           username: {
-  //             [Op.like]: `%${req.query.name}%`,
-  //           },
-  //         },
-  //         {
-  //           firstname: {
-  //             [Op.like]: `%${req.query.name}%`,
-  //           },
-  //         },
-  //         {
-  //           lastname: {
-  //             [Op.like]: `%${req.query.name}%`,
-  //           },
-  //         },
-  //       ],
-  //     },
-  //     ...req.paginationOpts,
-  //   };
-
-  //   users = await User.paginate(options);
-
-  //   users.pagination = getNextPrevPages(
-  //     req.paginationOpts.page,
-  //     req.paginationOpts.limit,
-  //     users.total
-  //   );
-  // } else {
-  //   users = await User.paginate(req.paginationOpts);
-
-  //   users.pagination = getNextPrevPages(
-  //     req.paginationOpts.page,
-  //     req.paginationOpts.paginate,
-  //     users.total
-  //   );
-  //   console.log("Paginaiton Opts:", req.paginationOpts);
-  //   console.log(
-  //     getNextPrevPages(
-  //       req.paginationOpts.page,
-  //       req.paginationOpts.paginate,
-  //       users.total
-  //     )
-  //   );
-  // }
+    users = await paginatedResults(req,User,options); 
+  } 
+  else {
+    users = await paginatedResults(req,User);
+   
+  }
 
   res.status(201).json({
     success: true,
@@ -99,25 +71,21 @@ exports.getUser = asyncHandler(async (req, res, next) => {
  * @access    Private
  */
 exports.getUserFriendRequests = asyncHandler(async (req, res, next) => {
-  const { userId } = req.params;
+  
+  const user = await User.findByPk(req.user.id);
 
-  const user = await User.findByPk(userId);
-
-  if (!user)
-    return next(
-      new ErrorResponse(`L'utilisateur avec l'id ${userId} n' existe pas`)
-    );
-
-  const friendRequests = await FriendRequest.findAll({
-    where: { request_id_to: userId },
-    include: {
-      model: User,
-      where: {
-        id: userId,
+    const options = {
+      where: { request_id_to: req.user.id },
+      include: {
+        model: User,
+        where: {
+          id: req.user.id,
+        },
+        attributes: ["firstname", "username", "lastname"],
       },
-      attributes: ["firstname", "username", "lastname"],
-    },
-  });
+    }
+    
+    const friendRequests = await paginatedResults(req,FriendRequest,options)
 
   res.status(200).json({
     success: true,
@@ -229,7 +197,7 @@ exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
 
   if (!req.files)
     return next(
-      new ErrorResponse(`Veuillez envoyer une image de 2Mo ou moins`, 400)
+      new ErrorResponse(`Veuillez envoyer une image.`, 400)
     );
 
   const file = req.files.file;
@@ -237,7 +205,7 @@ exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
   // Make sure the image is a photo
   if (!file.mimetype.startsWith("image"))
     return next(
-      new ErrorResponse(`Veuillez envoyer une image de 2Mo ou moins`, 400)
+      new ErrorResponse(`Veuillez envoyer une image.`, 400)
     );
 
   // Check filesize

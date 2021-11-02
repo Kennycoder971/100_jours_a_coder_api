@@ -1,20 +1,22 @@
 const { Challenge } = require("../models");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
-
+const paginatedResults = require("../utils/paginatedResults");
 /**
  * @desc      Get all challenges
  * @route     GET /api/v1/challenges
  * @access    Private
  */
 exports.getChallenges = asyncHandler(async (req, res, next) => {
-  let challenges = await Challenge.findAll({
+  const options = {
     where: {
       user_id: req.user.id,
     },
-  });
+  }
+  
+  let challenges = await paginatedResults(req,Challenge,options)
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: challenges,
   });
@@ -32,7 +34,7 @@ exports.getLastChallenge = asyncHandler(async (req, res, next) => {
     order: [["createdAt", "DESC"]],
   });
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: challenge,
   });
@@ -59,7 +61,7 @@ exports.createChallenge = asyncHandler(async (req, res, next) => {
     ...req.body,
   });
 
-  res.send({
+  res.status(201).json({
     success: true,
     data: challenge,
   });
@@ -85,7 +87,7 @@ exports.updateChallenge = asyncHandler(async (req, res, next) => {
 
   await challenge.update(req.body);
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: challenge,
   });
@@ -113,7 +115,7 @@ exports.deleteChallenge = asyncHandler(async (req, res, next) => {
 
   await challenge.destroy(req.body);
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: {},
   });

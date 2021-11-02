@@ -1,6 +1,8 @@
-const { Message } = require("../models");
+const { Message,User } = require("../models");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
+const paginatedResults = require("../utils/paginatedResults");
+
 
 /**
  * @desc      Get created or sent messages
@@ -10,18 +12,21 @@ const ErrorResponse = require("../utils/ErrorResponse");
  */
 exports.getMessages = asyncHandler(async (req, res, next) => {
   let messages;
+  let options;
   if (req.query.sender === "me") {
-    messages = await Message.findAll({
+    options = {
       where: {
         user_id_from: req.user.id,
       },
-    });
+    }
+   messages = await paginatedResults(req,Message,options)
   } else {
-    messages = await Message.findAll({
+    options = {
       where: {
         user_id_to: req.user.id,
       },
-    });
+    }
+    messages = await paginatedResults(req,Message,options)
   }
 
   res.status(200).json({
@@ -36,7 +41,13 @@ exports.getMessages = asyncHandler(async (req, res, next) => {
  * @access    Private
  */
 exports.createMessage = asyncHandler(async (req, res, next) => {
-  const message = await Message.create({
+  
+  const user = await User.findByPk(req.params.userId)
+
+  if(!user) return next(
+    new ErrorResponse(`L' utilisateur avec l'id ${req.params.userId} n'existe pas.`))
+  
+    const message = await Message.create({
     user_id_from: req.user.id,
     user_id_to: req.params.userId,
     content: req.body.content,

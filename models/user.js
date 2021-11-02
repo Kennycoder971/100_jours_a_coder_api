@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       );
     }
+    
     /**
      * Match the string password with then ecrypted one in the database
      * @param  {string} enteredPassword
@@ -67,7 +68,7 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "cascade",
       });
       this.hasMany(Challenge, { foreignKey: "user_id", onDelete: "cascade" });
-      this.hasMany(Message, { foreignKey: "user_id_to", onDelete: "cascade" });
+      this.hasMany(Message, { foreignKey: "user_id_to",});
       this.hasMany(resetPasswordToken, {
         foreignKey: "user_id",
         onDelete: "cascade",

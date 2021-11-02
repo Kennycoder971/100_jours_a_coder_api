@@ -1,6 +1,7 @@
 const { Comment, Challenge } = require("../models");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
+const paginatedResults = require("../utils/paginatedResults");
 
 /**
  * @desc      Get all comments for a challenge
@@ -16,7 +17,7 @@ exports.getComments = asyncHandler(async (req, res, next) => {
 
   const comments = await challenge.getComments();
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: comments,
   });
@@ -34,7 +35,7 @@ exports.createComment = asyncHandler(async (req, res, next) => {
     ...req.body,
   });
 
-  res.send({
+  res.status(201).json({
     success: true,
     data: comment,
   });
@@ -84,7 +85,7 @@ exports.updateComment = asyncHandler(async (req, res, next) => {
 
   await comment[0].update(req.body);
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: comment[0],
   });
@@ -134,7 +135,7 @@ exports.deleteComment = asyncHandler(async (req, res, next) => {
 
   await comment[0].destroy(req.body);
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: {},
   });

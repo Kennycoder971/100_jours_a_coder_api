@@ -2,7 +2,7 @@ const { Conversation, User } = require("../models");
 const { Op } = require("sequelize");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
-const { getPagination, getPagingData } = require("../utils/pagination");
+const paginatedResults = require("../utils/paginatedResults");
 
 /**
  * @desc      Get all conversations
@@ -10,14 +10,12 @@ const { getPagination, getPagingData } = require("../utils/pagination");
  * @access    Private
  */
 exports.getConversations = asyncHandler(async (req, res, next) => {
-  const { limit, offset } = getPagination(req.query.page);
 
   let { count, rows } = await Conversation.findAndCountAll({
     where: {
       user_id: req.user.id,
     },
-    limit,
-    offset,
+   
   });
 
   const conversations = await Promise.all(
@@ -37,7 +35,7 @@ exports.getConversations = asyncHandler(async (req, res, next) => {
 
   const result = { rows: conversations, count };
   const data = getPagingData(result, req.query.page, limit);
-  res.json({
+  res.status(200).json({
     success: true,
     data,
   });
@@ -61,7 +59,7 @@ exports.getConversation = asyncHandler(async (req, res, next) => {
     },
   });
 
-  res.json({
+  res.status(200).json({
     success: true,
     data: conversations[0],
   });
@@ -108,7 +106,7 @@ exports.createConversation = asyncHandler(async (req, res, next) => {
 
   const replies = await conversation[0].getReplies();
 
-  res.json({
+  res.status(200).json({
     success: true,
     data: {
       conversation,
@@ -139,7 +137,7 @@ exports.deleteconversation = asyncHandler(async (req, res, next) => {
 
   await conversation.destroy(req.body);
 
-  res.json({
+  res.status(200).json({
     success: true,
     data: {},
   });

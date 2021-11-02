@@ -34,7 +34,7 @@ exports.getCommentLikes = asyncHandler(async (req, res, next) => {
     );
   const likes = await comment[0].countLikeComments();
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: likes,
   });
@@ -93,7 +93,7 @@ exports.createCommentLike = asyncHandler(async (req, res, next) => {
     comment_id: req.params.commentId,
   });
 
-  res.send({
+  res.status(201).json({
     success: true,
     data: like,
   });
@@ -149,7 +149,7 @@ exports.deleteCommentLike = asyncHandler(async (req, res, next) => {
 
   await like.destroy();
 
-  res.send({
+  res.status(200).json({
     success: true,
     data: {},
   });
