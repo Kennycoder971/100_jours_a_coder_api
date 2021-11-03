@@ -173,16 +173,16 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
 
 /**
  * @desc      Upload photo for user
- * @route     PUT /api/v1/users/:id/photo
+ * @route     PUT /api/v1/users/photo
  * @access    Private
  */
 exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
-  const user = await User.findByPk(req.params.id);
+  const user = await User.findByPk(req.user.id);
 
   if (!user)
     return next(
       new ErrorResponse(
-        `L'utilisateur avec l'id ${req.params.id} n'existe pas`,
+        `L'utilisateur avec l'id ${req.user.id} n'existe pas`,
         404
       )
     );

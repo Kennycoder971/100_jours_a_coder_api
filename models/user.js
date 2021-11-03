@@ -168,8 +168,8 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
-      intro: DataTypes.TEXT,
-      profile: DataTypes.TEXT,
+      title: DataTypes.TEXT,
+      desc: DataTypes.TEXT,
       profile_picture: {
         type: DataTypes.STRING,
       },

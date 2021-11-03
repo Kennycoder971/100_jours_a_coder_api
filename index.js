@@ -1,4 +1,4 @@
-const { sequelize, User } = require("./models/index");
+const { sequelize } = require("./models/index");
 const dotenv = require("dotenv");
 const express = require("express");
 const morgan = require("morgan");
