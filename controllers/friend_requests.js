@@ -5,7 +5,7 @@ const ErrorResponse = require("../utils/ErrorResponse");
 const paginatedResults = require("../utils/paginatedResults");
 
 /**
- * @desc      Get all friend requests received
+ * @desc      Get all friend requests received or sent
  * @route     GET /api/v1/friend_requests
  * @route     GET /api/v1/friend_requests?sender=:id
  * @access    Private
@@ -13,22 +13,61 @@ const paginatedResults = require("../utils/paginatedResults");
 exports.getFriendRequests = asyncHandler(async (req, res, next) => {
   let friendRequests;
   let options;
+
   if (req.query.sender) {
-     options = {
-      where: {
-        request_id_from: req.query.sender,
-      },
-      include: {
-        model: User,
-        attributes: ["firstname", "username", "lastname"],
-      },
-    }
-    friendRequests = await paginatedResults(req,FriendRequest,options);
+    if (req.query.sender != req.user.id)
+      return next(
+        new ErrorResponse(
+          "Vous n'êtes pas authorisé à avoir ces informations",
+          403
+        )
+      );
+    options = {
+      attributes: ["id", "request_id_from"],
+    };
+    friendRequests = await paginatedResults(req, FriendRequest, options);
+
+    friendRequests.docs = await Promise.all(
+      friendRequests.docs.map(async ({ request_id_from }) => {
+        return await User.findByPk(request_id_from, {
+          attributes: ["id", "username", "profile_picture"],
+        });
+      })
+    );
   } else {
-    friendRequests = await paginatedResults(req,FriendRequest);
+    options = {
+      where: {
+        [Op.or]: [
+          {
+            request_id_from: {
+              [Op.ne]: req.user.id,
+            },
+            request_id_to: {
+              [Op.ne]: req.user.id,
+            },
+          },
+        ],
+      },
+      attributes: ["id", "request_id_from", "status"],
+    };
+
+    friendRequests = await paginatedResults(req, FriendRequest, options);
+    friendRequests.docs = await Promise.all(
+      friendRequests.docs.map(async ({ request_id_from, status, id }) => {
+        const user = await User.findByPk(request_id_from, {
+          attributes: ["id", "username", "profile_picture"],
+        });
+
+        return {
+          ...user.dataValues,
+          status,
+          request_id_from: id,
+        };
+      })
+    );
   }
 
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     data: friendRequests,
   });

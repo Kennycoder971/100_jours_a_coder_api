@@ -10,13 +10,12 @@ const paginatedResults = require("../utils/paginatedResults");
  * @access    Private
  */
 exports.getConversations = asyncHandler(async (req, res, next) => {
-
   let { count, rows } = await Conversation.findAndCountAll({
     where: {
-      user_id: req.user.id,
+      [Op.or]: [{ user_id: req.user.id }, { user_two: req.user.id }],
     },
-   
   });
+  console.log(rows);
 
   const conversations = await Promise.all(
     rows.map(async (conversation) => {
@@ -34,10 +33,10 @@ exports.getConversations = asyncHandler(async (req, res, next) => {
   );
 
   const result = { rows: conversations, count };
-  const data = getPagingData(result, req.query.page, limit);
+
   res.status(200).json({
     success: true,
-    data,
+    data: result,
   });
 });
 

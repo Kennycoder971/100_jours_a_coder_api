@@ -1,4 +1,3 @@
-const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
@@ -21,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       );
     }
-    
+
     /**
      * Match the string password with then ecrypted one in the database
      * @param  {string} enteredPassword
@@ -68,7 +67,7 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "cascade",
       });
       this.hasMany(Challenge, { foreignKey: "user_id", onDelete: "cascade" });
-      this.hasMany(Message, { foreignKey: "user_id_to",});
+      this.hasMany(Message, { foreignKey: "user_id_to" });
       this.hasMany(resetPasswordToken, {
         foreignKey: "user_id",
         onDelete: "cascade",
@@ -138,13 +137,8 @@ module.exports = (sequelize, DataTypes) => {
       phone_number: {
         type: DataTypes.STRING,
         validate: {
-          isPhoneNum(value) {
-            if (!validator.isMobilePhone(value, "any"))
-              throw new Error("Le numéro de téléphone n'est pas valide");
-          },
-          len: {
-            args: [8, 16],
-            msg: "Le numéro de téléphone n'est pas valide ou doit être entre 8 et 16 chiffres",
+          isNumeric: {
+            msg: "Le numéro de téléphone n'est pas valide",
           },
         },
       },
@@ -171,6 +165,9 @@ module.exports = (sequelize, DataTypes) => {
       intro: DataTypes.TEXT,
       profile: DataTypes.TEXT,
       profile_picture: {
+        type: DataTypes.STRING,
+      },
+      profile_cover: {
         type: DataTypes.STRING,
       },
       address: {

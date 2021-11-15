@@ -12,7 +12,7 @@ const paginatedResults = require("../utils/paginatedResults");
  * @access    Private/Admin
  */
 exports.getUsers = asyncHandler(async (req, res, next) => {
-  let users 
+  let users;
   if (req.query.name) {
     const options = {
       where: {
@@ -36,11 +36,9 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
       },
     };
 
-    users = await paginatedResults(req,User,options); 
-  } 
-  else {
-    users = await paginatedResults(req,User);
-   
+    users = await paginatedResults(req, User, options);
+  } else {
+    users = await paginatedResults(req, User);
   }
 
   res.status(201).json({
@@ -71,21 +69,20 @@ exports.getUser = asyncHandler(async (req, res, next) => {
  * @access    Private
  */
 exports.getUserFriendRequests = asyncHandler(async (req, res, next) => {
-  
   const user = await User.findByPk(req.user.id);
 
-    const options = {
-      where: { request_id_to: req.user.id },
-      include: {
-        model: User,
-        where: {
-          id: req.user.id,
-        },
-        attributes: ["firstname", "username", "lastname"],
+  const options = {
+    where: { request_id_to: req.user.id },
+    include: {
+      model: User,
+      where: {
+        id: req.user.id,
       },
-    }
-    
-    const friendRequests = await paginatedResults(req,FriendRequest,options)
+      attributes: ["firstname", "username", "lastname"],
+    },
+  };
+
+  const friendRequests = await paginatedResults(req, FriendRequest, options);
 
   res.status(200).json({
     success: true,
@@ -196,17 +193,14 @@ exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
     );
 
   if (!req.files)
-    return next(
-      new ErrorResponse(`Veuillez envoyer une image.`, 400)
-    );
+    return next(new ErrorResponse(`Veuillez envoyer une image.`, 400));
 
   const file = req.files.file;
 
+  console.log(req.files);
   // Make sure the image is a photo
   if (!file.mimetype.startsWith("image"))
-    return next(
-      new ErrorResponse(`Veuillez envoyer une image.`, 400)
-    );
+    return next(new ErrorResponse(`Veuillez envoyer une image.`, 400));
 
   // Check filesize
   if (file.size > process.env.MAX_FILE_UPLOAD)
@@ -227,8 +221,71 @@ exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
         )
       );
 
-    user.update({
+    await user.update({
       profile_picture: file.name,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: file.name,
+    });
+  });
+});
+
+/**
+ * @desc      Upload cover for user
+ * @route     PUT /api/v1/users/:id/cover
+ * @access    Private
+ */
+exports.userCoverUpload = asyncHandler(async (req, res, next) => {
+  const user = await User.findByPk(req.params.id);
+
+  if (!user)
+    return next(
+      new ErrorResponse(
+        `L'utilisateur avec l'id ${req.params.id} n'existe pas`,
+        404
+      )
+    );
+
+  if (user.id !== req.user.id)
+    return next(
+      new ErrorResponse(
+        `Vous n'êtes pas authorisé à modifier la photo cet utilisateur`,
+        401
+      )
+    );
+
+  if (!req.files)
+    return next(new ErrorResponse(`Veuillez envoyer une image.`, 400));
+
+  const file = req.files.cover;
+
+  // Make sure the image is a photo
+  if (!file.mimetype.startsWith("image"))
+    return next(new ErrorResponse(`Veuillez envoyer une image.`, 400));
+
+  // Check filesize
+  if (file.size > process.env.MAX_FILE_UPLOAD)
+    return next(
+      new ErrorResponse(`Veuillez envoyer une image de 2Mo ou moins`, 400)
+    );
+
+  // Create custom filename
+  file.name = `cover_${user.id}${path.parse(file.name).ext}`;
+
+  // Move file to ./public/uploads
+  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+    if (err)
+      return next(
+        new ErrorResponse(
+          `Une erreur est survenue durant le transfert d'image`,
+          500
+        )
+      );
+
+    await user.update({
+      profile_cover: file.name,
     });
 
     res.status(200).json({

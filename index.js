@@ -9,6 +9,7 @@ const path = require("path");
 const app = express();
 const fileupload = require("express-fileupload");
 const PORT = process.env.PORT || 5000;
+const cors = require("cors");
 
 // Load env vars
 dotenv.config({ path: "./config/config.env" });
@@ -21,6 +22,9 @@ app.use(cookieParser());
 
 // File uploading
 app.use(fileupload());
+
+// Cors
+app.use(cors());
 
 // Get the routes
 const userRoute = require("./routes/user");
