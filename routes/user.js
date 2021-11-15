@@ -16,7 +16,7 @@ const router = express.Router({ mergeParams: true });
 
 router.get("/:userId/friend_requests", protect, getUserFriendRequests);
 
-router.route("/:id/photo").put(protect, userPhotoUpload);
+router.route("/photo").put(protect, userPhotoUpload);
 
 router.route("/:id/cover").put(protect, userCoverUpload);
 
