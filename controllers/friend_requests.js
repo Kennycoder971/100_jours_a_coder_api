@@ -22,9 +22,11 @@ exports.getFriendRequests = asyncHandler(async (req, res, next) => {
           403
         )
       );
+
     options = {
       attributes: ["id", "request_id_from"],
     };
+
     friendRequests = await paginatedResults(req, FriendRequest, options);
 
     friendRequests.docs = await Promise.all(
@@ -37,13 +39,13 @@ exports.getFriendRequests = asyncHandler(async (req, res, next) => {
   } else {
     options = {
       where: {
-        [Op.or]: [
+        [Op.and]: [
           {
             request_id_from: {
               [Op.ne]: req.user.id,
             },
             request_id_to: {
-              [Op.ne]: req.user.id,
+              [Op.eq]: req.user.id,
             },
           },
         ],
@@ -52,6 +54,7 @@ exports.getFriendRequests = asyncHandler(async (req, res, next) => {
     };
 
     friendRequests = await paginatedResults(req, FriendRequest, options);
+
     friendRequests.docs = await Promise.all(
       friendRequests.docs.map(async ({ request_id_from, status, id }) => {
         const user = await User.findByPk(request_id_from, {
@@ -79,13 +82,14 @@ exports.getFriendRequests = asyncHandler(async (req, res, next) => {
  * @access    Private
  */
 exports.getFriendRequest = asyncHandler(async (req, res, next) => {
-  const user = await FriendRequest.findByPk(req.params.id);
+  const friendRequest = await FriendRequest.findByPk(req.params.id);
 
-  if (!user) return next(new ErrorResponse("Cet utilisateur n'existe pas"));
+  if (!friendRequest)
+    return next(new ErrorResponse("Cet utilisateur n'existe pas"));
 
   res.status(200).json({
     success: true,
-    data: user,
+    data: friendRequest,
   });
 });
 
@@ -117,24 +121,12 @@ exports.createFriendRequest = asyncHandler(async (req, res, next) => {
       )
     );
 
-  // Look for  the sender and receiver of the friend request
-  const [sender, receiver] = await User.findAll({
+  // Look for  the receiver of the friend request
+  const receiver = await User.findOne({
     where: {
-      [Op.or]: [
-        {
-          id: req.user.id,
-        },
-        {
-          id: req.params.id,
-        },
-      ],
+      id: req.params.id,
     },
   });
-
-  if (!sender)
-    return next(
-      new ErrorResponse(`L'utilisateur qui envoie la requête n'existe pas`, 404)
-    );
 
   if (!receiver)
     return next(

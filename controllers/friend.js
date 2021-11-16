@@ -16,7 +16,7 @@ exports.getFriends = asyncHandler(async (req, res, next) => {
   const currUserId = req.user.id;
 
   /**
-   * @desc  Find friends as such :
+   * @desc  Find friends object as such :
    *  {
    *   user_id_requester:1,
    *   user_id_requested:2,
@@ -74,6 +74,68 @@ exports.getFriends = asyncHandler(async (req, res, next) => {
       }
     });
   }
+
+  res.status(200).json({
+    success: true,
+    data: friends,
+  });
+});
+
+/**
+ * @desc      Get all friends for a user
+ * @route     GET /api/v1/friends/:id
+ * @access    Private
+ */
+exports.getUserFriends = asyncHandler(async (req, res, next) => {
+  let friends;
+  const currUserId = req.params.id;
+
+  /**
+   * @desc  Find friends object as such :
+   *  {
+   *   user_id_requester:1,
+   *   user_id_requested:2,
+   *  }
+   */
+
+  friends = await Friend.findAll({
+    where: {
+      [Op.or]: [
+        {
+          user_id_requester: currUserId,
+        },
+        {
+          user_id_requested: currUserId,
+        },
+      ],
+    },
+  });
+
+  if (!friends[0])
+    return res.status(200).json({
+      success: true,
+      data: [],
+    });
+
+  // Get all friends id
+  const arrFriendsId = friends.map(
+    ({ user_id_requester, user_id_requested }) => {
+      return user_id_requester == currUserId
+        ? user_id_requested
+        : user_id_requester;
+    }
+  );
+
+  // Get the friends (users) by id and define them as a User instance
+  friends = await sequelize.query(
+    `SELECT id, username, profile_picture FROM users WHERE id in (${arrFriendsId.join(
+      ", "
+    )})`,
+    {
+      model: User,
+      mapToModel: true,
+    }
+  );
 
   res.status(200).json({
     success: true,

@@ -16,11 +16,15 @@ exports.protect = asyncHandler(async (req, res, next) => {
     token = req.headers.authorization.split(" ")[1];
   }
 
+  console.log(token);
+  console.log("_______________________");
   //   Make sur token exists
   if (!token)
     return next(
-      new ErrorResponse("Vous n'êtes pas authorisé à accéder à cette route."),
-      401
+      new ErrorResponse(
+        "Vous n'êtes pas authorisé à accéder à cette route.",
+        401
+      )
     );
 
   try {
@@ -30,15 +34,19 @@ exports.protect = asyncHandler(async (req, res, next) => {
 
     if (!req.user)
       return next(
-        new ErrorResponse("Vous n'êtes pas authorisé à accéder à cette route."),
-        401
+        new ErrorResponse(
+          "Vous n'êtes pas authorisé à accéder à cette route.",
+          401
+        )
       );
 
     next();
   } catch (error) {
     return next(
-      new ErrorResponse("Vous n'êtes pas authorisé à accéder à cette route."),
-      401
+      new ErrorResponse(
+        "Vous n'êtes pas authorisé à accéder à cette route.",
+        401
+      )
     );
   }
 });
@@ -48,9 +56,9 @@ exports.authorize = (...roles) => {
     if (!roles.includes(req.user.role))
       return next(
         new ErrorResponse(
-          `L'utilisateur avec le role ${req.user.role} n'est pas authorisé à accéder à cette route.`
-        ),
-        403
+          `L'utilisateur avec le role ${req.user.role} n'est pas authorisé à accéder à cette route.`,
+          403
+        )
       );
     next();
   };
