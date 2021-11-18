@@ -31,14 +31,9 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: false,
       },
       hours_a_day: {
-        type: DataTypes.TIME,
+        type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          is: {
-            args: /^\d{1,2}:(?:[0-5]\d)$/gm,
-            msg: "Le temps n'est pas valide.",
-          },
-
           notEmpty: {
             msg: "Vous devez entrer une durée en temps.",
             args: true,
