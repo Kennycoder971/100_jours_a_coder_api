@@ -1,7 +1,6 @@
 const { Comment, Challenge } = require("../models");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
-const paginatedResults = require("../utils/paginatedResults");
 
 /**
  * @desc      Get all comments for a challenge
@@ -34,6 +33,9 @@ exports.createComment = asyncHandler(async (req, res, next) => {
     challenge_id: req.params.challengeId,
     ...req.body,
   });
+
+  console.log("_______________HERE________");
+  console.log(req.body);
 
   res.status(201).json({
     success: true,

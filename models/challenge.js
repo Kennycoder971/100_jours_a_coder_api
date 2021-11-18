@@ -14,13 +14,14 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(LikeChallenge, { foreignKey: "challenge_id" });
     }
   }
+
   Challenge.init(
     {
       text: {
         type: DataTypes.TEXT,
         validate: {
           notEmpty: {
-            msg: "Le champ texte est requis",
+            msg: "Le champ but est requis",
             args: true,
           },
         },
@@ -35,11 +36,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           notEmpty: {
-            msg: "Vous devez entrer une durée en temps.",
-            args: true,
+            msg: "Vous devez entrer une durée.",
           },
           notNull: {
-            msg: "Vous devez entrer une durée en temps. Ex(10:30)",
+            msg: "Vous devez entrer une durée.",
           },
         },
       },
@@ -66,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "Challenge",
 
       hooks: {
-        afterCreate: async function (challenge, options) {
+        afterCreate: async function(challenge, options) {
           await challenge.update({
             start_date: sequelize.fn("NOW"),
             end_date: sequelize.fn(

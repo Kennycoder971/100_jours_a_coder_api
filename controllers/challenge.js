@@ -12,9 +12,9 @@ exports.getChallenges = asyncHandler(async (req, res, next) => {
     where: {
       user_id: req.user.id,
     },
-  }
-  
-  let challenges = await paginatedResults(req,Challenge,options)
+  };
+
+  let challenges = await paginatedResults(req, Challenge, options);
 
   res.status(200).json({
     success: true,
