@@ -21,6 +21,26 @@ exports.getChallenges = asyncHandler(async (req, res, next) => {
     data: challenges,
   });
 });
+
+/**
+ * @desc      Get last challenge for a user
+ * @route     GET /api/v1/challenges/last/:id
+ * @access    Private
+ */
+exports.getUserLastChallenges = asyncHandler(async (req, res, next) => {
+  const challenge = await Challenge.findOne({
+    where: {
+      user_id: req.params.id,
+    },
+    order: [["createdAt", "DESC"]],
+  });
+
+  res.status(200).json({
+    success: true,
+    data: challenge,
+  });
+});
+
 /**
  * @desc      Get the last challenges
  * @route     GET /api/v1/challenges/last

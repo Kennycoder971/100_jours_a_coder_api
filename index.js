@@ -68,7 +68,7 @@ process.on("unhandledRejection", (err, promise) => {
 
 // Create the database and tables
 async function main() {
-  await sequelize.sync();
+  await sequelize.sync({ alter: true });
 }
 
 main();

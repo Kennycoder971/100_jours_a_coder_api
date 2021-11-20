@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: false,
       },
       hours_a_day: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
           notEmpty: {
@@ -66,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "Challenge",
 
       hooks: {
-        afterCreate: async function(challenge, options) {
+        afterCreate: async function (challenge, options) {
           await challenge.update({
             start_date: sequelize.fn("NOW"),
             end_date: sequelize.fn(
