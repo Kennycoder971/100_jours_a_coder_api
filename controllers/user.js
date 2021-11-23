@@ -197,7 +197,6 @@ exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
 
   const file = req.files.file;
 
-  console.log(req.files);
   // Make sure the image is a photo
   if (!file.mimetype.startsWith("image"))
     return next(new ErrorResponse(`Veuillez envoyer une image.`, 400));
