@@ -3,3 +3,4 @@
 /config
 
 /public/uploads/*
+!/public/uploads/.gitkeep
