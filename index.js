@@ -1,12 +1,14 @@
 const { sequelize } = require("./models/index");
 const dotenv = require("dotenv");
+
 const express = require("express");
+const app = express();
+
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const colors = require("colors");
 const errorHandler = require("./middlewares/error");
 const path = require("path");
-const app = express();
 const fileupload = require("express-fileupload");
 const PORT = process.env.PORT || 5000;
 const cors = require("cors");
@@ -68,7 +70,7 @@ process.on("unhandledRejection", (err, promise) => {
 
 // Create the database and tables
 async function main() {
-  await sequelize.sync({ alter: true });
+  await sequelize.sync();
 }
 
 main();

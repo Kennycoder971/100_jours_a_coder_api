@@ -3,7 +3,7 @@ const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/ErrorResponse");
 const paginatedResults = require("../utils/paginatedResults");
 /**
- * @desc      Get all challenges
+ * @desc      Get all challenges for the connected user
  * @route     GET /api/v1/challenges
  * @access    Private
  */
@@ -14,7 +14,23 @@ exports.getChallenges = asyncHandler(async (req, res, next) => {
     },
   };
 
-  let challenges = await paginatedResults(req, Challenge, options);
+  const challenges = await paginatedResults(req, Challenge, options);
+
+  res.status(200).json({
+    success: true,
+    data: challenges,
+  });
+});
+
+/**
+ * @desc      Get all challenges
+ * @route     GET /api/v1/challenges/all
+ * @access    Private
+ */
+exports.getAllChallenges = asyncHandler(async (req, res, next) => {
+  const challenges = await paginatedResults(req, Challenge, {
+    order: [["createdAt", "DESC"]],
+  });
 
   res.status(200).json({
     success: true,

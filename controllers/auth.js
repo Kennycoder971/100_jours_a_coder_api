@@ -45,7 +45,6 @@ exports.login = asyncHandler(async (req, res, next) => {
   // Match user entered password to hashed password in database
   const isMatch = await user.matchPassword(password);
 
-  console.log(email, password, isMatch);
   if (!isMatch)
     return next(
       new ErrorResponse("L'email et/ou le mot de passe sont invalides", 401)

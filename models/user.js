@@ -37,8 +37,6 @@ module.exports = (sequelize, DataTypes) => {
 
       // Hash token and set to resetPasswordToken field
       this.token = crypto.createHash("sha256").update(resetToken).digest("hex");
-
-      console.log(resetToken);
       // Set the expire
       this.reset_password_expire = Date.now() + 10 * 60 * 1000;
 
@@ -233,5 +231,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
   sequelizePaginate.paginate(User);
+
   return User;
 };

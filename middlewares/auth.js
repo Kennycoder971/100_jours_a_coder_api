@@ -16,8 +16,6 @@ exports.protect = asyncHandler(async (req, res, next) => {
     token = req.headers.authorization.split(" ")[1];
   }
 
-  console.log(token);
-  console.log("_______________________");
   //   Make sur token exists
   if (!token)
     return next(

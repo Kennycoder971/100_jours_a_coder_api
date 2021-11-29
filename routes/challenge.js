@@ -7,6 +7,7 @@ const {
   updateChallenge,
   deleteChallenge,
   getUserLastChallenges,
+  getAllChallenges,
 } = require("../controllers/challenge");
 
 const {
@@ -60,5 +61,7 @@ router
 
 router.get("/last/:id", getUserLastChallenges);
 router.get("/last", getLastChallenge);
+
+router.get("/all", getAllChallenges);
 
 module.exports = router;
